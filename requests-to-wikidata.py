@@ -5,10 +5,8 @@ def get_wikidata_id(wikipedia_link):
 
   url = "https://en.wikipedia.org/w/api.php"
 
-  title = wikipedia_link[::-1]
-  title_end = title.find("/")
-  title = title[0 : title_end]
-  title = title[::-1]
+  title_start = wikipedia_link.find("wiki/") + len("wiki/")
+  title = wikipedia_link[title_start :]
 
   params = {
     
@@ -44,19 +42,11 @@ def get_code_definition(id):
   
 
 
-def search_wikidata_for_human(name):
+def search_wikidata_for_human(link):
+  
+  id = get_wikidata_id(link)
+
   url = "https://www.wikidata.org/w/api.php"
-
-  params = {
-        "action" : "wbsearchentities",
-        "language" : "en",
-        "format" : "json",
-        "search" : name
-        }
-
-  data = requests.get(url, params=params).json()
-  id = data['search'][0]['id']
-
   params = {
         "action" : "wbgetentities",
         "languages" : "en",
@@ -99,4 +89,4 @@ def get_all_values_from_all_claims(data, id):
         current_claim.append(sub_claim)  
 
     all_claims.update({get_code_definition(key) : current_claim})
-  return all_claims  
+  return all_claims
