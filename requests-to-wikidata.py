@@ -1,9 +1,32 @@
 import requests
 
 
+def get_wikidata_id(wikipedia_link):
+
+  url = "https://en.wikipedia.org/w/api.php"
+
+  title = wikipedia_link[::-1]
+  title_end = title.find("/")
+  title = title[0 : title_end]
+  title = title[::-1]
+
+  params = {
+    
+    "action" : "query",
+    "prop" : "pageprops",
+    "format" : "json",
+    "titles" : title
+  }
+
+  data = requests.get(url, params).json()
+  return data["query"]["pages"][list(data["query"]["pages"].keys())[0]]["pageprops"]["wikibase_item"]
+
+
 def get_code_definition(id):
 
   url = "https://www.wikidata.org/w/api.php"
+  
+
   
   params = {
         "action" : "wbgetentities",
@@ -12,8 +35,13 @@ def get_code_definition(id):
         "ids" : id
         }
   data = requests.get(url, params=params).json()
+  data = data['entities'][id]
 
-  return data['entities'][id]['labels']['en']['value']
+  if 'labels' in data.keys():
+    return data['labels']['en']['value']
+  elif 'lemmas' in data.keys():
+    return data['lemmas']['en']['value']
+  
 
 
 def search_wikidata_for_human(name):
