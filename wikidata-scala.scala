@@ -1,3 +1,5 @@
+import play.api.libs.json.{JsLookupResult, JsString, JsValue, Json}
+
 class wikidata {
 
   def getWikidataId(link: String): String = {
